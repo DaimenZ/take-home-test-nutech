@@ -1,3 +1,6 @@
+> **Warning:**  
+> Since this project is deployed using Railway, it is not recommended to perform testing using Postman. Use other API testing tools, such as Hoppscotch.
+
 # Take Home Test Nutech
 
 REST API yang dibuat memiliki modul Registrasi, Login, Cek Saldo, Top Up, dan Transaksi. Pada Transaksi, dapat melakukan layanan pembayaran seperti Pulsa, Voucher Game, dan lain-lain.
