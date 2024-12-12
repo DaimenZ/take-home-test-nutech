@@ -29,6 +29,12 @@ class MembershipRoute implements Routes {
       authenticateToken,
       this.membershipController.getProfile
     );
+    this.router.put(
+      "/profile/update",
+      authenticateToken,
+      validate(membershipSchemas.updateProfile),
+      this.membershipController.updateProfile
+    );
   }
 }
 

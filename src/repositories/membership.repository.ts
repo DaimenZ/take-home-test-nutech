@@ -35,6 +35,11 @@ export default class MembershipRespository {
     }
   }
 
+  /**
+   * @function findUserByEmail - mencari user berdasarkan email
+   * @param email
+   * @returns {Promise<User | null>} - data user yang ditemukan
+   */
   static async findUserByEmail(email: string): Promise<User | null> {
     const query = `SELECT * FROM users WHERE email = $1`;
 
@@ -48,6 +53,35 @@ export default class MembershipRespository {
       logger.error(
         "[Database Error] - [MembershipRepository] - [findUserByEmail]: " +
           error
+      );
+
+      throw new HttpException(500, 105, "Database Error");
+    }
+  }
+
+  /**
+   * @function updateProfile - update profile user
+   * @param email
+   * @param first_name
+   * @param last_name
+   * @returns {Promise<User>} - data user yang baru saja diupdate
+   */
+  static async updateProfile(
+    email: string,
+    first_name: string,
+    last_name: string
+  ): Promise<User> {
+    const query = `UPDATE users SET first_name = $1, last_name = $2 WHERE email = $3 RETURNING *`;
+
+    const values = [first_name, last_name, email];
+
+    try {
+      const { rows } = await pool.query<User>(query, values);
+
+      return rows[0];
+    } catch (error) {
+      logger.error(
+        "[Database Error] - [MembershipRepository] - [updateProfile]: " + error
       );
 
       throw new HttpException(500, 105, "Database Error");

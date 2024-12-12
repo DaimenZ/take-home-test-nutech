@@ -2,7 +2,11 @@ import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 
-import { Profile, RegisterDTO } from "../interface/membership.interface";
+import {
+  Profile,
+  RegisterDTO,
+  UpdateProfileDTO,
+} from "../interface/membership.interface";
 import { HttpException } from "../middlewares/error.middleware";
 import MembershipRespository from "../repositories/membership.repository";
 
@@ -76,6 +80,35 @@ class MembershipService {
       first_name: user.first_name,
       last_name: user.last_name,
       profile_image: user.profile_image,
+    };
+  }
+
+  /**
+   * @function updateProfile - update profile user
+   * @param user_email - email user
+   * @param data - data profile user
+   * @returns {Promise<Profile>} - profile user
+   */
+  public async updateProfile(
+    user_email: string,
+    data: UpdateProfileDTO
+  ): Promise<Profile> {
+    const { first_name, last_name } = data;
+
+    const user = await MembershipRespository.findUserByEmail(user_email);
+    if (!user) throw new HttpException(404, 104, "User tidak ditemukan");
+
+    const updatedUser = await MembershipRespository.updateProfile(
+      user_email,
+      first_name,
+      last_name
+    );
+
+    return {
+      email: updatedUser.email,
+      first_name: updatedUser.first_name,
+      last_name: updatedUser.last_name,
+      profile_image: updatedUser.profile_image,
     };
   }
 }

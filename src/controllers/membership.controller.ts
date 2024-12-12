@@ -56,6 +56,10 @@ class MembershipController {
     }
   };
 
+  /**
+   *
+   * @function getProfile - get profile user
+   */
   public getProfile = async (
     req: RequestWithUser,
     res: Response,
@@ -69,6 +73,32 @@ class MembershipController {
       res.status(200).json({ status: 0, message: "Sukses", data: response });
     } catch (error) {
       logger.error(`[MembershipController] - [getProfile]: ${error}`);
+      next(error);
+    }
+  };
+
+  /**
+   *
+   * @function updateProfile - update profile user
+   */
+  public updateProfile = async (
+    req: RequestWithUser,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const user_email = req.user_email;
+
+      const response = await this.membershipService.updateProfile(
+        user_email!,
+        req.body
+      );
+
+      res
+        .status(200)
+        .json({ status: 0, message: "Update Pofile berhasil", data: response });
+    } catch (error) {
+      logger.error(`[MembershipController] - [updateProfile]: ${error}`);
       next(error);
     }
   };

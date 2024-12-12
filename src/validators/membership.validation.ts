@@ -34,6 +34,17 @@ const membershipSchemas = {
       "any.required": "Parameter password diperlukan",
     }),
   }),
+
+  updateProfile: Joi.object({
+    first_name: Joi.string().required().messages({
+      "string.empty": "Parameter first_name tidak boleh kosong",
+      "any.required": "Parameter first_name diperlukan",
+    }),
+    last_name: Joi.string().required().messages({
+      "string.empty": "Parameter last_name tidak boleh kosong",
+      "any.required": "Parameter last_name diperlukan",
+    }),
+  }),
 };
 
 export default membershipSchemas;
