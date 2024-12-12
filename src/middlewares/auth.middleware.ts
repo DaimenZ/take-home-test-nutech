@@ -11,44 +11,47 @@ dotenv.config();
 
 const tokenSecret = process.env.JWT_SECRET || "test_secret";
 
-export const authenticateToken = async (
+export const authenticateToken = (
   req: RequestWithUser,
   res: Response,
   next: NextFunction
-) => {
+): void => {
   try {
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
-    if (!token)
-      return res
-        .status(401)
-        .json({
-          status: 108,
-          message: "Token tidak tidak valid atau kadaluwarsa",
-          data: null,
-        });
+
+    if (!token) {
+      res.status(401).json({
+        status: 108,
+        message: "Token tidak valid atau kadaluwarsa",
+        data: null,
+      });
+
+      return;
+    }
 
     const data = jwt.verify(token, tokenSecret) as DataStoredInToken;
-    if (!data)
-      return res
-        .status(401)
-        .json({
-          status: 108,
-          message: "Token tidak tidak valid atau kadaluwarsa",
-          data: null,
-        });
+
+    if (!data) {
+      logger.error("Invalid token payload");
+      res.status(401).json({
+        status: 108,
+        message: "Token tidak valid atau kadaluwarsa",
+        data: null,
+      });
+
+      return;
+    }
 
     req.user_email = data.user_email;
 
     next();
   } catch (error) {
-    logger.error("Wrong authentication token");
-    return res
-      .status(401)
-      .json({
-        status: 108,
-        message: "Token tidak tidak valid atau kadaluwarsa",
-        data: null,
-      });
+    logger.error("Authentication error", error);
+    res.status(401).json({
+      status: 108,
+      message: "Token tidak valid atau kadaluwarsa",
+      data: null,
+    });
   }
 };

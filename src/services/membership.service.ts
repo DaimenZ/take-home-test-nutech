@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 
-import { RegisterDTO } from "../interface/membership.interface";
+import { Profile, RegisterDTO } from "../interface/membership.interface";
 import { HttpException } from "../middlewares/error.middleware";
 import MembershipRespository from "../repositories/membership.repository";
 
@@ -55,11 +55,28 @@ class MembershipService {
     if (!isPasswordMatch)
       throw new HttpException(401, 103, "Username atau password salah");
 
-    const token = jwt.sign({ email: user.email }, tokenSecret, {
+    const token = jwt.sign({ user_email: user.email }, tokenSecret, {
       expiresIn: "12h",
     });
 
     return { token };
+  }
+
+  /**
+   * @function getProfile - get profile user
+   * @param user_email - email user
+   * @returns {Promise<Profile>} - profile user
+   */
+  public async getProfile(user_email: string): Promise<Profile> {
+    const user = await MembershipRespository.findUserByEmail(user_email);
+    if (!user) throw new HttpException(404, 104, "User tidak ditemukan");
+
+    return {
+      email: user.email,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      profile_image: user.profile_image,
+    };
   }
 }
 

@@ -3,6 +3,7 @@ import { Routes } from "../interface/routes.interface";
 import MembershipController from "../controllers/membership.controller";
 import validate from "../middlewares/validation.middleware";
 import membershipSchemas from "../validators/membership.validation";
+import { authenticateToken } from "../middlewares/auth.middleware";
 
 class MembershipRoute implements Routes {
   public router = Router();
@@ -22,6 +23,11 @@ class MembershipRoute implements Routes {
       "/login",
       validate(membershipSchemas.login),
       this.membershipController.login
+    );
+    this.router.get(
+      "/profile",
+      authenticateToken,
+      this.membershipController.getProfile
     );
   }
 }

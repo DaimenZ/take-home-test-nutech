@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import MembershipService from "../services/membership.service";
 import logger from "../logs/logger";
+import { RequestWithUser } from "../interface/auth.interface";
 
 class MembershipController {
   private membershipService;
@@ -51,6 +52,23 @@ class MembershipController {
       });
     } catch (error) {
       logger.error(`[MembershipController] - [login]: ${error}`);
+      next(error);
+    }
+  };
+
+  public getProfile = async (
+    req: RequestWithUser,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const user_email = req.user_email;
+
+      const response = await this.membershipService.getProfile(user_email!);
+
+      res.status(200).json({ status: 0, message: "Sukses", data: response });
+    } catch (error) {
+      logger.error(`[MembershipController] - [getProfile]: ${error}`);
       next(error);
     }
   };
