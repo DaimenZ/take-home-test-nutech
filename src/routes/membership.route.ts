@@ -35,6 +35,11 @@ class MembershipRoute implements Routes {
       validate(membershipSchemas.updateProfile),
       this.membershipController.updateProfile
     );
+    this.router.put(
+      "/profile/image",
+      authenticateToken,
+      this.membershipController.uploadProfileImage
+    );
   }
 }
 

@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
+import { v4 as uuidv4 } from "uuid";
 
 import {
   Profile,
@@ -9,6 +10,8 @@ import {
 } from "../interface/membership.interface";
 import { HttpException } from "../middlewares/error.middleware";
 import MembershipRespository from "../repositories/membership.repository";
+import path from "path";
+import { UploadedFile } from "express-fileupload";
 
 dotenv.config();
 
@@ -102,6 +105,38 @@ class MembershipService {
       user_email,
       first_name,
       last_name
+    );
+
+    return {
+      email: updatedUser.email,
+      first_name: updatedUser.first_name,
+      last_name: updatedUser.last_name,
+      profile_image: updatedUser.profile_image,
+    };
+  }
+
+  private async saveImage(file: UploadedFile): Promise<string> {
+    const fileName = `${uuidv4()}.${file.name.split(".").pop()}`;
+    const filePath = "src/public/assets/" + fileName;
+    const filePaths = path.join(__dirname, "../..", filePath);
+
+    await file.mv(filePaths);
+
+    return filePath;
+  }
+
+  public async uploadProfileImage(
+    user_email: string,
+    file: any
+  ): Promise<Profile> {
+    const user = await MembershipRespository.findUserByEmail(user_email);
+    if (!user) throw new HttpException(404, 104, "User tidak ditemukan");
+
+    const filePath = await this.saveImage(file);
+
+    const updatedUser = await MembershipRespository.updateProfileImage(
+      user_email,
+      filePath
     );
 
     return {

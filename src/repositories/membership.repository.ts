@@ -87,4 +87,32 @@ export default class MembershipRespository {
       throw new HttpException(500, 105, "Database Error");
     }
   }
+
+  /**
+   * @function updateProfileImage - update profile image user
+   * @param email
+   * @param profile_image
+   * @returns {Promise<User>} - data user yang baru saja diupdate
+   */
+  static async updateProfileImage(
+    email: string,
+    profile_image: string
+  ): Promise<User> {
+    const query = `UPDATE users SET profile_image = $1 WHERE email = $2 RETURNING *`;
+
+    const values = [profile_image, email];
+
+    try {
+      const { rows } = await pool.query<User>(query, values);
+
+      return rows[0];
+    } catch (error) {
+      logger.error(
+        "[Database Error] - [MembershipRepository] - [updateProfileImage]: " +
+          error
+      );
+
+      throw new HttpException(500, 105, "Database Error");
+    }
+  }
 }

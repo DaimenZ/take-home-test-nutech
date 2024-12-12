@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import MembershipService from "../services/membership.service";
 import logger from "../logs/logger";
 import { RequestWithUser } from "../interface/auth.interface";
+import { HttpException } from "../middlewares/error.middleware";
 
 class MembershipController {
   private membershipService;
@@ -99,6 +100,43 @@ class MembershipController {
         .json({ status: 0, message: "Update Pofile berhasil", data: response });
     } catch (error) {
       logger.error(`[MembershipController] - [updateProfile]: ${error}`);
+      next(error);
+    }
+  };
+
+  public uploadProfileImage = async (
+    req: RequestWithUser,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const user_email = req.user_email;
+      const { files } = req;
+      if (!files) throw new HttpException(400, 102, "File tidak ditemukan");
+
+      const uploadedFile = files.file;
+
+      const validTypes = ["image/jpeg", "image/png"]; // tipe file yang diperbolehkan
+      if (
+        !Array.isArray(uploadedFile) &&
+        !validTypes.includes(uploadedFile.mimetype)
+      )
+        throw new HttpException(400, 102, "Format Image tidak sesuai");
+
+      const response = await this.membershipService.uploadProfileImage(
+        user_email!,
+        uploadedFile
+      );
+
+      res
+        .status(200)
+        .json({
+          status: 0,
+          message: "Update Profile Image berhasil",
+          data: response,
+        });
+    } catch (error) {
+      logger.error(`[MembershipController] - [uploadProfileImage]: ${error}`);
       next(error);
     }
   };
