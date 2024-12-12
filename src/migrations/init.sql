@@ -35,6 +35,8 @@ CREATE TABLE Transactions (
     transaction_type VARCHAR(50) NOT NULL,
     description TEXT,
     total_amount INTEGER NOT NULL,
+    user_email VARCHAR(255) NOT NULL,
     created_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_user_email FOREIGN KEY (user_email) REFERENCES Users(email) ON DELETE CASCADE
 );

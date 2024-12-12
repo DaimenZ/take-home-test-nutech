@@ -44,6 +44,27 @@ class InformationRepository {
       throw new HttpException(500, 105, "Database Error");
     }
   }
+
+  static async findServiceByCode(
+    service_code: string
+  ): Promise<Service | null> {
+    const query = `SELECT * FROM services WHERE service_code = $1`;
+
+    const values = [service_code];
+
+    try {
+      const { rows } = await pool.query<Service>(query, values);
+
+      return rows[0];
+    } catch (error) {
+      logger.error(
+        "[Database Error] - [InformationRepository] - [findServiceByCode]: " +
+          error
+      );
+
+      throw new HttpException(500, 105, "Database Error");
+    }
+  }
 }
 
 export default InformationRepository;
