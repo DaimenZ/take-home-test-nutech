@@ -22,6 +22,18 @@ const membershipSchemas = {
       "any.required": "Parameter password diperlukan",
     }),
   }),
+
+  login: Joi.object({
+    email: Joi.string().email().required().messages({
+      "string.email": "Parameter email tidak sesuai format",
+      "string.empty": "Parameter email tidak boleh kosong",
+      "any.required": "Parameter email diperlukan",
+    }),
+    password: Joi.string().required().messages({
+      "string.empty": "Parameter password tidak boleh kosong",
+      "any.required": "Parameter password diperlukan",
+    }),
+  }),
 };
 
 export default membershipSchemas;

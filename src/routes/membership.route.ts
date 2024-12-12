@@ -18,6 +18,11 @@ class MembershipRoute implements Routes {
       validate(membershipSchemas.register),
       this.membershipController.register
     );
+    this.router.post(
+      "/login",
+      validate(membershipSchemas.login),
+      this.membershipController.login
+    );
   }
 }
 
